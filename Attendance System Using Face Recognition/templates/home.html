@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <title>Face Recognition Based Attendance System</title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='img/bg.png') }}");
+            background-size: cover;
+            margin-top: 0;
+        }
+
+        table {
+            border-radius: 20px;
+            border-collapse: collapse;
+            width: 86%;
+            margin: auto;
+        }
+
+        td, th {
+            padding: 10px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        .content-section {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Attendance System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#attendance" onclick="showSection('attendance')">Today's Attendance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#add-user" onclick="showSection('add-user')">Add New Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#total-users" onclick="showSection('total-users')">Total Users</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class='mt-3 text-center' style="">
+        <h1 style="color: white; padding: 11px; font-size: 44px; margin-top: 50px;">Attendance System Using Face Recognition</h1>
+    </div>
+
+    <!-- Error Message -->
+    {% if mess %}
+    <p class="text-center" style="color: red; font-size: 20px;">{{ mess }}</p>
+    {% endif %}
+
+    <!-- Attendance Section -->
+    <div class="container content-section" id="attendance" style="display: block; margin-top: 50px;">
+        <div class="row text-center" style="padding: 20px;">
+            <div class="col" style="border-radius: 20px; background-color: rgba(0, 0, 0, 0.8); padding: 20px;">
+                <h2 style="color: white; padding: 10px; border-radius: 20px 20px 0 0;">Today's Attendance <i class="material-icons">assignment</i></h2>
+                <a style="text-decoration: none;" href="/start">
+                    <button class="btn btn-primary" style="font-size: 24px; font-weight: bold; border-radius: 10px; width: 300px; margin: 20px 0;">Take Attendance <i class="material-icons">beenhere</i></button>
+                </a>
+                <table class="table table-bordered table-striped" style="background-color: white;">
+                    <thead>
+                        <tr>
+                            <th>S No</th>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if l %}
+                        {% for i in range(l) %}
+                        <tr>
+                            <td>{{ i+1 }}</td>
+                            <td>{{ names[i] }}</td>
+                            <td>{{ rolls[i] }}</td>
+                            <td>{{ times[i] }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New User Section -->
+    <div class="container content-section" id="add-user" style="margin-top: 50px;">
+        <div class="row text-center">
+            <!-- Image Column -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center" 
+                 style="border-radius: 20px; background-color: rgba(0, 0, 0, 0.8); padding: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <img src="{{ url_for('static', filename='img/new_user.png') }}" alt="New User" 
+                    style="max-width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+            </div>
+            
+            <!-- Form Column -->
+            <div class="col-md-8" 
+                style="border-radius: 20px; background-color: rgba(0, 0, 0, 0.8); padding: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <h2 style="color: white; padding: 15px; border-radius: 20px 20px 0 0;">
+                    Add New Employee 
+                </h2>
+                
+                <form action='/add' method="POST" enctype="multipart/form-data" class="text-start" style="padding: 20px;">
+                    <!-- User Name Input -->
+                    <div class="mb-4">
+                        <label for="newusername" style="font-size: 18px; color: white;"><b>Enter New Employee Name:</b></label>
+                        <input type="text" id="newusername" name="newusername" 
+                            class="form-control" 
+                            style="font-size: 18px; margin-top: 5px; padding: 10px; background-color: black; color: white; border: 1px solid white; border-radius: 8px;" 
+                            required>
+                    </div>
+                    
+                    <!-- User ID Input -->
+                    <div class="mb-4">
+                        <label for="newuserid" style="font-size: 18px; color: white;"><b>Enter New Employee ID:</b></label>
+                        <input type="number" id="newuserid" name="newuserid" 
+                            class="form-control" 
+                            style="font-size: 18px; margin-top: 5px; padding: 10px; background-color: black; color: white; border: 1px solid white; border-radius: 8px;" 
+                            required>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" 
+                                style="font-size: 20px; font-weight: bold; border-radius: 8px; width: 80%; padding: 10px;">
+                            Add New Employee
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Total Users Section -->
+    <div class="container content-section" id="total-users" style="margin-top: 50px; padding-bottom: 50px;">
+        <div class="row text-center">
+            <div class="col" style="border-radius: 20px; background-color: rgba(0, 0, 0, 0.8); padding: 20px;">
+                <h2 style="color: white; background-color: rgb(216, 13, 77); padding: 10px; border-radius: 20px 20px 0 0;">Total Users</h2>
+                <h5 style="color: white; padding-top: 20px;">Total Users in Database: {{ totalreg }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.style.display = 'none');
+
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Set default section to display on load
+        document.addEventListener('DOMContentLoaded', () => showSection('attendance'));
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
